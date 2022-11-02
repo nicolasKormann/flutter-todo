@@ -5,7 +5,9 @@ import 'package:todo/views/home/home_controller.dart';
 import 'package:todo/views/home/home_repository.dart';
 
 class TodoList extends StatefulWidget {
-  const TodoList({super.key});
+  const TodoList({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<TodoList> createState() => _TodoListState();
@@ -13,8 +15,6 @@ class TodoList extends StatefulWidget {
 
 class _TodoListState extends State<TodoList> {
   final controller = HomeController(HomeRepositoryHttp());
-
-  final List<TodoModel> _todos = <TodoModel>[];
 
   void _handleTodoChange(TodoModel todo) {
     setState(() {
@@ -24,31 +24,26 @@ class _TodoListState extends State<TodoList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<List<TodoModel>>(
       future: controller.getItems(),
-      builder: ((context, snapshot) {
-        List<Widget> children;
-
-        if (snapshot.hasData) {
-          return ListView(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            children: _todos.map((TodoModel todo) {
-              return TodoItem(
-                todo: todo,
-                onTodoChanged: _handleTodoChange,
-              );
-            }).toList(),
-          );
-        } else if (snapshot.hasError) {
-          return const Text('Error');
-        } else {
-          return const SizedBox(
-            width: 60,
-            height: 80,
+      builder: (context, snapshot) {
+        if (snapshot.data == null && !snapshot.hasError) {
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
-      }),
+        if (snapshot.hasError) {
+          const Center(
+            child: Text('Ops, deu ruim'),
+          );
+        }
+        return ListView.builder(
+            itemCount: snapshot.data?.length,
+            itemBuilder: (context, index) {
+              final item = snapshot.data?[index];
+              return TodoItem(todo: item, onTodoChanged: _handleTodoChange);
+            });
+      },
     );
   }
 }
