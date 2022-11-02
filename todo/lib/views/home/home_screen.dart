@@ -19,6 +19,16 @@ class _TodoListState extends State<TodoList> {
 
   final homeController = HomeController(HomeRepositoryHttp());
 
+  ////////
+  final controller = HomeController(HomeRepositoryHttp());
+
+  void _handleTodoChange(TodoModel todo) {
+    setState(() {
+      todo.checked = !todo.checked;
+    });
+  }
+  /////
+
   Future<void> _displayDialog() async {
     return showDialog<void>(
       context: context,
@@ -54,18 +64,20 @@ class _TodoListState extends State<TodoList> {
                 TextButton(
                   child: const Text('Adicionar'),
                   onPressed: () {
-                    Navigator.of(context).pop();
-                    if (_titleController.text.isEmpty ||
-                        _descriptionController.text.isEmpty) {
-                      return;
-                    }
-                    homeController.createItem(TodoModel(
-                        title: _titleController.text,
-                        description: _descriptionController.text,
-                        checked: false));
-
-                    /* _addTodoItem(
-                        _titleController.text, _descriptionController.text); */
+                    setState(() {
+                      Navigator.of(context).pop();
+                      if (_titleController.text.isEmpty ||
+                          _descriptionController.text.isEmpty) {
+                        return;
+                      }
+                      homeController.createItem(
+                        TodoModel(
+                          _titleController.text,
+                          _descriptionController.text,
+                          false,
+                        ),
+                      );
+                    });
                   },
                 ),
               ],
@@ -75,18 +87,6 @@ class _TodoListState extends State<TodoList> {
       },
     );
   }
-
-  /* void _addTodoItem(String name, String description) {
-    if (_titleController.text.isEmpty || _descriptionController.text.isEmpty) {
-      return;
-    }
-    setState(() {
-      _todos.add(
-          TodoModel(title: name, description: description, checked: false));
-    });
-    _titleController.clear();
-    _descriptionController.clear();
-  } */
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +99,28 @@ class _TodoListState extends State<TodoList> {
       appBar: AppBar(
         title: const Text('To-do List'),
       ),
-      body: TodoList(),
+      body: FutureBuilder<List<TodoModel>>(
+        future: controller.getItems(),
+        builder: (context, snapshot) {
+          print('SNAPSHOT: $snapshot');
+          if (snapshot.data == null && !snapshot.hasError) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (snapshot.hasError) {
+            const Center(
+              child: Text('Ops, deu ruim'),
+            );
+          }
+          return ListView.builder(
+              itemCount: snapshot.data?.length,
+              itemBuilder: (context, index) {
+                final item = snapshot.data?[index];
+                return TodoItem(todo: item, onTodoChanged: _handleTodoChange);
+              });
+        },
+      ),
     );
   }
 }
