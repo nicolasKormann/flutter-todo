@@ -6,19 +6,24 @@ class TodoModel {
   bool checked;
 
   TodoModel(
-      {required this.title, required this.description, required this.checked});
+    this.title,
+    this.description,
+    this.checked,
+  );
 
   Map<String, dynamic> toMap() {
     return {
-      'name': title,
+      'title': title,
       'description': description,
       'checked': checked,
     };
   }
 
   factory TodoModel.fromMap(Map<String, dynamic> map) {
-    final model = TodoModel(title: '', description: '', checked: false,
-      
+    final model = TodoModel(
+      map['title'] ?? '',
+      map['description'] ?? '',
+      map['checked'] ?? '',
     );
     return model;
   }
@@ -31,11 +36,12 @@ class TodoModel {
   TodoModel copyWith({
     String? title,
     String? description,
-    bool? checked,    
+    bool? checked,
   }) {
-    return TodoModel(title: '', description: '', checked: false      
+    return TodoModel(
+      title ?? this.title,
+      description ?? this.description,
+      checked ?? this.checked,
     );
-  }  
+  }
 }
-
-
