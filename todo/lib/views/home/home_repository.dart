@@ -8,7 +8,7 @@ abstract class HomeRepository {
 }
 
 class HomeRepositoryHttp implements HomeRepository {
-  final baseUrl = 'https://crudcrud.com/api/bb576389aa1e4e4f9ed2fd0bfa87704e';
+  final baseUrl = 'https://crudcrud.com/api/0b0184d969804a3f9922995a0718492a';
   @override
   Future<bool> createItem(TodoModel todo) async {
     final response = await http.post(
@@ -22,15 +22,15 @@ class HomeRepositoryHttp implements HomeRepository {
     print(response.statusCode);
     return true;
   }
-  
+
   @override
   Future<List<TodoModel>> getItems() async {
     final response = await http.get(
       Uri.parse('$baseUrl/items'),
     );
     final list = List.from(jsonDecode(response.body));
+    print(list);
     final todo = list.map((e) => TodoModel.fromMap(e)).toList();
     return todo;
   }
- 
 }
