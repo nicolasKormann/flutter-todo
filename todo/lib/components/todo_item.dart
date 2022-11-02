@@ -7,7 +7,7 @@ class TodoItem extends StatelessWidget {
     required this.onTodoChanged,
   }) : super(key: ObjectKey(todo));
 
-  final TodoModel todo;
+  final TodoModel? todo;
   final void Function(TodoModel) onTodoChanged;
 
   TextStyle? _getTextStyle(bool checked) {
@@ -24,13 +24,13 @@ class TodoItem extends StatelessWidget {
     return Card(
       child: ListTile(
         onTap: () {
-          onTodoChanged(todo);
+          onTodoChanged(todo!);
         },
         leading: CircleAvatar(
-          child: Text(todo.title[0]),
+          child: Text(todo!.title[0]),
         ),
-        title: Text('${todo.title[0].toUpperCase()}${todo.title.substring(1)}', style: _getTextStyle(todo.checked)),
-        subtitle: Text(todo.description, style: _getTextStyle(todo.checked)),
+        title: Text('${todo!.title[0].toUpperCase()}${todo!.title.substring(1)}', style: _getTextStyle(todo!.checked)),
+        subtitle: Text(todo!.description, style: _getTextStyle(todo!.checked)),
       ),
     );
   }
