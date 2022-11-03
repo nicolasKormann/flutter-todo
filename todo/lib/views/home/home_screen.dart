@@ -19,34 +19,30 @@ class _TodoListState extends State<TodoList> {
 
   final homeController = HomeController(HomeRepositoryHttp());
 
-  ////////
-  final controller = HomeController(HomeRepositoryHttp());
-
   void _handleTodoChange(TodoModel todo) {
     setState(() {
       todo.checked = !todo.checked;
     });
   }
-  /////
 
   Future<void> _displayDialog() async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Adicionar novo item'),
           content: SizedBox(
             height: 150,
+            width: MediaQuery.of(context).size.width * 0.9,
             child: Column(
               children: [
                 TextField(
                   controller: _titleController,
-                  decoration: const InputDecoration(hintText: 'Título'),
+                  decoration: const InputDecoration(label: Text('Título')),
                 ),
                 TextField(
                   controller: _descriptionController,
-                  decoration: const InputDecoration(hintText: 'Descrição'),
+                  decoration: const InputDecoration(label: Text('Descrição')),
                 ),
               ],
             ),
@@ -100,7 +96,7 @@ class _TodoListState extends State<TodoList> {
         title: const Text('To-do List'),
       ),
       body: FutureBuilder<List<TodoModel>>(
-        future: controller.getItems(),
+        future: homeController.getItems(),
         builder: (context, snapshot) {
           print('SNAPSHOT: $snapshot');
           if (snapshot.data == null && !snapshot.hasError) {
